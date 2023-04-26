@@ -10,12 +10,12 @@
 # Declaration of functions
 print_login_history () {
     last
-    echo "This is the login history"
+    echo "$1"
 }
 
 # Main
 print_login_history
 print_login_history
-print_login_history
+print_login_history "This is the login history."
 
 # End
