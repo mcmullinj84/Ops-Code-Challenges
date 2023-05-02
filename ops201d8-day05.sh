@@ -6,7 +6,7 @@
 # Purpose:                      Practice Loop and use PID features
 
 # Declaration of variables
-PID=$(ps)
+PID=$(pgrep .)
 input=()
 # Declaration of functions
 
@@ -15,7 +15,7 @@ while [[ $PID != 0 ]]
 do
     echo "Above is active PIDs, input PID # to kill"
     read input
-    kill $input var=$((var+1))
+    kill $input
     echo "PID $input neutralized"
     echo $PID
 done    
