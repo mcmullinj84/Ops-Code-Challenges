@@ -15,12 +15,12 @@
 echo " Computer Name "
 hostname
 echo " CPU Info "
-sudo lshw | grep -A 6 "*-cpu"
+sudo lshw | grep -A 6 "*-cpu" | grep -vw "version"
 echo " RAM Info "
 sudo lshw | grep -A 3 "*-memory"
 echo " Display Adapter "
-sudo lshw | grep -A 12 "*-display"
-echo " Network adapter "
+sudo lshw | grep -A 12 "*-display" | grep -vw version | grep -vw logical
+echo " Network Adapter "
 sudo lshw | grep -A 15 "*-network" 
 
 
