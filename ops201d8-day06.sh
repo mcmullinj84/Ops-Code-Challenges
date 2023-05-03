@@ -46,6 +46,7 @@ do
 
   # Print the new_files array after each time the user enters a filename
   echo "New files created by the script:"
+  # Checks if the number of new files is greater than 0
   if [ ${#new_files[@]} -gt 0 ]
   then
     for file in "${new_files[@]}"
