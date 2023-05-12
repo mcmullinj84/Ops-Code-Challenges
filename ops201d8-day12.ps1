@@ -1,4 +1,4 @@
-# Script Name:                  ops201d9-day12
+# Script Name:                  ops201d8-day12
 # Author:                       Jonathan McMullin
 # Date of latest revision:      05/09/2023
 # Purpose:                      Powershell Select string
