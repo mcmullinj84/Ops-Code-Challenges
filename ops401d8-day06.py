@@ -5,14 +5,13 @@
 # Date of latest revision:      07/17/2023
 # Purpose:                      Encryption
 
+# Credit: Utilized syntax from the Demo and ChatGPT to develop this script
+
 # import libraries
 from cryptography.fernet import Fernet
+import os
 
-# Declare Functions
-
-# Function that handles key generation
 def write_key():
-
     # Generate a key and save it to a file
     key = Fernet.generate_key()
     # checks for "key.key", creates it if not existing
@@ -20,35 +19,74 @@ def write_key():
         key_file.write(key)
 
 # Function to load the generated key for encryption/decryption
-
 def load_key():
-
     # Return the key from the key.key file
     return open("key.key", "rb")
 
+# Function to encrypt a file
+def encrypt_file(file_path):
+    with open(file_path, "rb") as file:
+        data = file.read()
+    f = Fernet(key)
+    encrypted_data = f.encrypt(data)
+    with open(file_path, "wb") as file:
+        file.write(encrypted_data)
+
+# Function to decrypt a file
+def decrypt_file(file_path):
+    with open(file_path, "rb") as file:
+        encrypted_data = file.read()
+    f = Fernet(key)
+    decrypted_data = f.decrypt(encrypted_data)
+    with open(file_path, "wb") as file:
+        file.write(decrypted_data)
+
+# Function to encrypt a message
+def encrypt_message(message):
+    f = Fernet(key)
+    encrypted_message = f.encrypt(message.encode())
+    print("The encrypted message is: " + encrypted_message.decode())
+
+# Function to decrypt a message
+def decrypt_message(encrypted_message):
+    f = Fernet(key)
+    decrypted_message = f.decrypt(encrypted_message.encode())
+    print("The decrypted message is: " + decrypted_message.decode())
+
 # Main
+if __name__ == "__main__":
+    # Generate and write the new key
+    write_key()
 
-# Generate and write the new key
-write_key()
+    # Load the generated key
+    key = load_key().read()
+    print("Key is: " + key.decode('utf-8'))
 
-# load the generated key
-key = load_key()
-print("Key is " + str(key.decode('utf-8')))
+    # Prompt user for mode selection
+    mode = int(input("Select a mode:\n1. Encrypt a file\n2. Decrypt a file\n3. Encrypt a message\n4. Decrypt a message\n"))
 
-# Encrypt a message
+    if mode == 1 or mode == 2:
+        # Prompt user for the file path
+        file_path = input("Enter the file path: ")
 
-# message to be encrypted
-message = "For Your Eyes Only".encode()
+        if mode == 1:
+            # Encrypt the target file
+            encrypt_file(file_path)
+            print("File encrypted successfully.")
+        else:
+            # Decrypt the target file
+            decrypt_file(file_path)
+            print("File decrypted successfully.")
 
-print("Plaintext message is " + message)
+    elif mode == 3 or mode == 4:
+        # Prompt user for the message
+        message = input("Enter the message: ")
 
-# DO THE ENCRYPTION - starts Fernet module and names it "f"
-
-f = Fernet(key)
-
-# Encrypt message
-encrypted_message = f.encrypt(message)
-
-# Print the encrypted message
-print("The encrypted message is: " + encrypted_message.decode('utf-8'))
-
+        if mode == 3:
+            # Encrypt the message
+            encrypt_message(message)
+        else:
+            # Decrypt the message
+            decrypt_message(message)
+    else:
+        print("Invalid mode selection.")
