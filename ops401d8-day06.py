@@ -11,12 +11,18 @@
 from cryptography.fernet import Fernet
 import os
 
+# Function to check if key.key exists already, and if not generates a new one
 def write_key():
-    # Generate a key and save it to a file
-    key = Fernet.generate_key()
-    # checks for "key.key", creates it if not existing
-    with open("key.key", "wb") as key_file:
-        key_file.write(key)
+    if os.path.isfile("key.key"):
+        # If the key file exists, read the key from the file
+        with open("key.key", "rb") as key_file:
+            key = key_file.read()
+    else:
+        # Generate a new key and save it to the file
+        key = Fernet.generate_key()
+        with open("key.key", "wb") as key_file:
+            key_file.write(key)
+    return key
 
 # Function to load the generated key for encryption/decryption
 def load_key():
@@ -26,6 +32,7 @@ def load_key():
 # Function to encrypt a file
 def encrypt_file(file_path):
     with open(file_path, "rb") as file:
+        # reads file:
         data = file.read()
     f = Fernet(key)
     encrypted_data = f.encrypt(data)
@@ -34,9 +41,10 @@ def encrypt_file(file_path):
 
 # Function to decrypt a file
 def decrypt_file(file_path):
+    
+    f = Fernet(key)
     with open(file_path, "rb") as file:
         encrypted_data = file.read()
-    f = Fernet(key)
     decrypted_data = f.decrypt(encrypted_data)
     with open(file_path, "wb") as file:
         file.write(decrypted_data)
@@ -54,6 +62,7 @@ def decrypt_message(encrypted_message):
     print("The decrypted message is: " + decrypted_message.decode())
 
 # Main
+# Checks if the script is being as the main program, as opposed to being imported as a module into another script.
 if __name__ == "__main__":
     # Generate and write the new key
     write_key()
@@ -62,7 +71,7 @@ if __name__ == "__main__":
     key = load_key().read()
     print("Key is: " + key.decode('utf-8'))
 
-    # Prompt user for mode selection
+    # Menu - Prompt user for mode selection
     mode = int(input("Select a mode:\n1. Encrypt a file\n2. Decrypt a file\n3. Encrypt a message\n4. Decrypt a message\n"))
 
     if mode == 1 or mode == 2:
