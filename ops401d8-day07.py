@@ -5,7 +5,7 @@
 # Date of latest revision:      07/18/2023
 # Purpose:                      Encryption v2
 
-# Credit: Utilized syntax from the Demo and ChatGPT to develop this script
+# Credit: Utilized syntax from Marco's Demo and ChatGPT to develop this script
 
 
 # import libraries
@@ -27,22 +27,22 @@ def write_key():
 
 # Function to load the generated key for encryption/decryption
 def load_key():
-    # Return the key from the key.key file
-    return open("key.key", "rb")
+    # Return the key from the key.key file - Chat GPT Recommended adding .read()
+    return open("key.key", "rb").read()
 
 # Function to encrypt a file
 def encrypt_file(file_path):
     with open(file_path, "rb") as file:
         # reads file:
         data = file.read()
-    f = Fernet(key)
+    f = Fernet(load_key())
     encrypted_data = f.encrypt(data)
     with open(file_path, "wb") as file:
         file.write(encrypted_data)
 
 # Function to decrypt a file
 def decrypt_file(file_path):
-    f = Fernet(key)
+    f = Fernet(load_key())
     with open(file_path, "rb") as file:
         encrypted_data = file.read()
     decrypted_data = f.decrypt(encrypted_data)
@@ -51,29 +51,31 @@ def decrypt_file(file_path):
 
 # Function to recursively encrypt a folder and its contents
 def encrypt_folder(folder_path):
-    for root, _, files in os.walk(folder_path):
+    for root, dirs, files in os.walk(folder_path):
         for file in files:
             file_path = os.path.join(root, file)
-            encrypt_file(file_path)
+            if file_path.endswith(".txt"):
+                encrypt_file(file_path)
     print("Folder and its contents encrypted successfully.")
 
 # Function to recursively decrypt an encrypted folder and its contents
 def decrypt_folder(folder_path):
-    for root, _, files in os.walk(folder_path):
+    for root, dirs, files in os.walk(folder_path):
         for file in files:
             file_path = os.path.join(root, file)
-            decrypt_file(file_path)
+            if file_path.endswith(".txt"):
+                decrypt_file(file_path)
     print("Folder and its contents decrypted successfully.")
 
 # Function to encrypt a message
 def encrypt_message(message):
-    f = Fernet(key)
+    f = Fernet(load_key())
     encrypted_message = f.encrypt(message.encode())
     print("The encrypted message is: " + encrypted_message.decode())
 
 # Function to decrypt a message
 def decrypt_message(encrypted_message):
-    f = Fernet(key)
+    f = Fernet(load_key())
     decrypted_message = f.decrypt(encrypted_message.encode())
     print("The decrypted message is: " + decrypted_message.decode())
 
