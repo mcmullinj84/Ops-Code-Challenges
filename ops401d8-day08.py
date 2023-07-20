@@ -7,10 +7,13 @@
 
 # Credit: Utilized syntax from Marco's Demo and ChatGPT to develop this script
 
-
 # import libraries
 from cryptography.fernet import Fernet
 import os
+import ctypes # so we can intereact with windows dlls and change windows background + popup
+import urllib.request # used for downloading and saving background image
+
+
 
 # Function to check if key.key exists already, and if not generates a new one
 def write_key():
@@ -79,6 +82,25 @@ def decrypt_message(encrypted_message):
     decrypted_message = f.decrypt(encrypted_message.encode())
     print("The decrypted message is: " + decrypted_message.decode())
 
+# Function to change Windows Desktop background to Ransomware
+# using portions from "ncorbuk" python-ransomware
+
+def change_desktop_background(self):
+    imageUrl = 'https://www.pcrisk.com/images/stories/screenshots202102/text-ransomware-ransom-note.jpg'
+    # Go to specif url and download+save image using absolute path
+    path = f'{self.sysRoot}Desktop/background.jpg'
+    urllib.request.urlretrieve(imageUrl, path)
+    SPI_SETDESKWALLPAPER = 20
+    # Access windows dlls for funcionality eg, changing dekstop wallpaper
+    ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, path, 0)
+
+# function to create a popup message
+#  using content from https://www.devdungeon.com/content/dialog-boxes-python 
+
+def pop_up_box():
+    MessageBox = ctypes.windll.user32.MessageBoxW
+    MessageBox(None, "You've Been Hacked, don't panic, follow the instructions on your Desktop.", 'Window title', 0)
+
 # Main
 if __name__ == "__main__":
     # Generate and write the new key
@@ -87,7 +109,7 @@ if __name__ == "__main__":
     print("Key is: " + key.decode('utf-8'))
 
     # Menu - Prompt user for mode selection
-    mode = int(input("Select a mode:\n1. Encrypt a file\n2. Decrypt a file\n3. Encrypt a message\n4. Decrypt a message\n5. Recursively encrypt a folder\n6. Recursively decrypt an encrypted folder\n"))
+    mode = int(input("Select a mode:\n1. Encrypt a file\n2. Decrypt a file\n3. Encrypt a message\n4. Decrypt a message\n5. Recursively encrypt a folder\n6. Recursively decrypt an encrypted folder\n7. Ransomware Simulation (Windows only)\n"))
 
     if mode == 1 or mode == 2:
         # Prompt user for the file path
@@ -126,6 +148,11 @@ if __name__ == "__main__":
 
         # Recursively decrypt the encrypted folder and its contents
         decrypt_folder(folder_path)
+    
+    elif mode == 7: 
+        change_desktop_background()
+        pop_up_box()
+        print("Check your Desktop")
 
     else:
         print("Invalid mode selection.")
