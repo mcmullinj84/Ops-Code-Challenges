@@ -20,9 +20,11 @@ def scan_port(host, port):
     if response is None:
         print(f"Port {port} is filtered (silently dropped).")
     elif response.haslayer(TCP):
+        # If the SYN-ACK flag (0x12) is received, the port is open
         if response.getlayer(TCP).flags == 0x12:
             send(IP(dst=host) / TCP(sport=src_port, dport=port, flags="R"), verbose=0)
             print(f"Port {port} is open.")
+        # If the RST flag (0x14) is received, the port is closed,
         elif response.getlayer(TCP).flags == 0x14:
             print(f"Port {port} is closed.")
     else:
@@ -30,13 +32,14 @@ def scan_port(host, port):
 
 def main():
     host = "scanme.nmap.org"  # Replace w/ target hostname or IP address
-    port_range = range(20, 81)  # Replace w/ desired port range
+    port_range = range(20, 23)  # Replace w/ desired port range
 
     # Sends a single ping and prints out the response packet
     p = sr1(IP(dst=host) / scapy.ICMP(), verbose=0)
     if p:
         p.show()
 
+    # Calls scan function on all ports in the range
     for port in port_range:
         scan_port(host, port)
 
