@@ -15,4 +15,4 @@ Shell scripting can help immensely to automate routine cybersecurity functions a
 The [final assignment](https://github.com/mcmullinj84/Ops-Code-Challenges/blob/main/ops301d8-day14.py) from Ops 301 was analysis of some malware code. I was able to go line-by-line through the code and identify what was happening without having to actually run the program.
 
 ## Ops 401 
-So far, my favorite part of Ops 401 has been creating a [python script](https://github.com/mcmullinj84/Ops-Code-Challenges/blob/main/ops401d8-day07.py)https://github.com/mcmullinj84/Ops-Code-Challenges/blob/main/ops401d8-day07.py to encrypt/decrypt files and/or directories. 
+So far, my favorite part of Ops 401 has been creating a [python script](https://github.com/mcmullinj84/Ops-Code-Challenges/blob/main/ops401d8-day07.py) to encrypt/decrypt files and/or directories. 
