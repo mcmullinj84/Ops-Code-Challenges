@@ -5,8 +5,12 @@
 # Date of latest revision:      07/31/2023
 # Purpose:                      Automated Brute Force Wordlist Attack Tool
 
-# 
+# Used Demo syntax and ChatGPT to develop this script.
+
+# Import Libraries
 import time
+
+# Declare Functions
 
 def iterator():
     # Ask the user for the filepath to the wordlist
@@ -56,6 +60,8 @@ def main():
         password_recognized()
     else:
         print("Invalid mode selection.")
+
+# Main 
 
 if __name__ == "__main__":
     main()
