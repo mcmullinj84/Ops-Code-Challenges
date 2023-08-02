@@ -8,8 +8,9 @@
 # Used Demo syntax and ChatGPT to develop this script.
 
 # Import Libraries
-import time
-from getpass import getpass 
+import paramiko
+from getpass import getpass
+import time 
 # Declare Functions
 
 def iterator():
@@ -49,17 +50,47 @@ def password_recognized():
     except FileNotFoundError:
         print("File not found. Please check the filepath.")
 
+def ssh_authentication():
+    host = input("Provide IP address to SSH into: ")
+    user = input("Please provide a username: ")
+    password = getpass("Input password: ")
+    port = 22
+
+    ssh = paramiko.SSHClient()
+
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    try:
+        ssh.connect(host, port, user, password)
+        stdin, stdout, stderr = ssh.exec_command("whoami")
+        time.sleep(3)
+        output = stdout.read()
+        print(output)
+        stdin, stdout, stderr = ssh.exec_command("ls -l")
+        time.sleep(3)
+        output = stdout.read()
+        print(output)
+        stdin, stdout, stderr = ssh.exec_command("pwd")
+        time.sleep(3)
+        output = stdout.read()
+        print(output)
+    except paramiko.AuthenticationException:
+        print("Authentication Failed")
+
 def main():
     print("Select a mode:")
     print("Mode 1: Offensive; Dictionary Iterator")
     print("Mode 2: Defensive; Password Recognized")
+    print("Mode 3: Authenticate to SSH Server")
 
-    mode = input("Enter the mode number (1 or 2): ")
+    mode = input("Enter the mode number (1, 2, or 3): ")
 
     if mode == "1":
         iterator()
     elif mode == "2":
         password_recognized()
+    elif mode == "3":
+        ssh_authentication()
     else:
         print("Invalid mode selection.")
 
