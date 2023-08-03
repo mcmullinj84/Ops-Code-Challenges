@@ -94,22 +94,29 @@ def ssh_authentication():
 
 def zip_brute_force():
     zip_file = input("Please provide the path to the zip file: ")
-    wordlist_file = "RockYou.txt"  # Assuming RockYou.txt is in the same directory as the script
+    wordlist_file = input("Please input path to password word list: ")
 
     try:
         with open(wordlist_file, 'r', errors='ignore') as wordlist:
-            for password in wordlist:
-                password = password.strip()
+            for line in wordlist:
+                password = line.strip()  # Ensure stripping all whitespace characters
+                print(f"Checking '{password}' ... " ) 
+
                 try:
                     with ZipFile(zip_file, 'r') as zf:
-                        zf.extractall(pwd=bytes(password, 'utf-8'))
-                        print("Password found:", password)
-                        break
-                # ChatGPT suggests adding this 'except' value 
-                except (RuntimeError, zipfile.BadZipFile, zipfile.LargeZipFile):
-                    pass  # Incorrect password, continue with the next one
+                        # Choose a file within the archive to test
+                        file_to_extract = zf.namelist()[0]
+                        zf.extract(file_to_extract, path='.', pwd=bytes(password, 'utf-8'))
+                        print(f"Password found: {password}")
+                        return  # Exit the function if successful
+                    
+                except:
+                    pass
+
+            print("No matching password found in the wordlist.")
     except FileNotFoundError:
         print("Wordlist file not found. Please make sure 'RockYou.txt' is available.")
+
 
 def main():
     print("Select a mode:")
