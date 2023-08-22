@@ -9,7 +9,7 @@
 
 # Import Libraries 
 
-import os
+import os, time 
 import platform
 
 # Define Functions
@@ -21,10 +21,11 @@ def search_files(filename, directory):
     for root, _, files in os.walk(directory):
         for file in files:
             if filename.lower() in file.lower():
+                # Adds to hit count if file name is found
                 hits += 1
                 file_path = os.path.join(root, file)
                 print(f"Found: {file_path}")
-
+            # Adds to file count after each iteration
             searched_files += 1
 
     return searched_files, hits
@@ -48,7 +49,10 @@ if __name__ == "__main__":
         searched_files = 0
         hits = 0
 
+
+# Prints number of files/hits
     print(f"Files searched: {searched_files}")
     print(f"Hits found: {hits}")
+    print("Search Complete")
 
 # End
