@@ -25,7 +25,7 @@ def setup_logging_file_and_stream():
     max_bytes = 1024 * 1024  # 1 MB (adjust as needed) this is equal to ~500 pgs of text
     backup_count = 3        # Number of backup log files to keep (adjust as needed)
     
-    # Rotating file handler
+    # Rotating file handler (logs to text files)
     file_handler = RotatingFileHandler(log_filename, maxBytes=max_bytes, backupCount=backup_count)
     file_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     file_handler.setFormatter(file_formatter)
