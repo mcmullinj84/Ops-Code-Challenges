@@ -7,12 +7,11 @@
 
 # Credit: Utilized syntax from Code Fellows Demo and ChatGPT to develop this script
 
-# Import Libraries 
+# Import Libraries
 
 import os
-import time
-import platform
 import hashlib
+import time
 
 # Define Functions
 
@@ -27,56 +26,52 @@ def hash_file(filename):
     return h.hexdigest()
 
 def get_file_info(file_path):
+    #This function uses os to get the size + timestamp
     try:
         file_size = os.path.getsize(file_path)
-        file_mtime = time.ctime(os.path.getmtime(file_path))
+        file_mtime = os.path.getmtime(file_path)
         return file_size, file_mtime
     except Exception as e:
         print(f"Error getting file info for {file_path}: {str(e)}")
         return None, None
 
-def search_files(filename, directory):
-    searched_files = 0
-    hits = 0
+def format_timestamp(timestamp):
+    # This function turns the timestamp into a human readable format
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(timestamp))
 
+def search_files(directory):
+    # sets counter to 0
+    searched_files = 0
+
+    # Uses os.walk to recursively iterate through user input directory
+    # and generate file paths.
     for root, _, files in os.walk(directory):
         for file in files:
-            if filename.lower() in file.lower():
-                hits += 1
-                file_path = os.path.join(root, file)
-                file_size, file_mtime = get_file_info(file_path)
+            # os.path.join allows the script to run on both ubuntu and windows
+            file_path = os.path.join(root, file)
+            file_size, file_mtime = get_file_info(file_path)
 
-                if file_size is not None and file_mtime is not None:
-                    file_hash = hash_file(file_path)
-                    print(f"Found: {file_path}")
-                    print(f"Timestamp: {file_mtime}")
-                    print(f"File Name: {file}")
-                    print(f"File Size: {file_size} bytes")
-                    print(f"MD5 Hash: {file_hash}")
-                    print("-" * 40)
+            if file_size is not None and file_mtime is not None:
+                file_hash = hash_file(file_path)
+                print(f"File Path: {file_path}")
+                print(f"Timestamp: {format_timestamp(file_mtime)}")
+                print(f"File Name: {file}")
+                print(f"File Size: {file_size} bytes")
+                print(f"SHA-1 Hash: {file_hash}")
+                print("-" * 40)
 
             searched_files += 1
 
-    return searched_files, hits
+    return searched_files
 
 # Main
 
 if __name__ == "__main__":
-    filename = input("Enter a file name to search for: ")
-    directory = input("Enter the directory to search in: ")
-
-    if platform.system() == "Linux":
-        # On Ubuntu Linux
-        searched_files, hits = search_files(filename, directory)
-    elif platform.system() == "Windows":
-        # On Windows 10
-        # Convert the directory path to Windows format
-        directory = directory.replace("/", "\\")
-        searched_files, hits = search_files(filename, directory)
+    directory = input("Enter an absolute directory path to search in: ")
+    
+    if not os.path.exists(directory):
+        print("Directory does not exist.")
     else:
-        print("Unsupported operating system.")
-        searched_files = 0
-        hits = 0
+        searched_files = search_files(directory)
 
-    print(f"Files searched: {searched_files}")
-    print(f"Hits found: {hits}")
+        print(f"Files searched: {searched_files}")
