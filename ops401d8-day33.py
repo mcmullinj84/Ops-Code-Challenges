@@ -6,13 +6,14 @@
 # Purpose:                      TotalVirus Enabled File Search Tool - Linux + Win
 
 # Credit: Utilized syntax from Code Fellows Demo and ChatGPT to develop this script
+# This uses the VirusTotal API and a script written by eduardxyz named "virustotal-search.py"
 
 # Import Libraries
-
 
 import os
 import hashlib
 import time
+import requests
 
 # Define Functions
 
@@ -65,14 +66,88 @@ def search_files(directory):
 
     return searched_files
 
+def check_virustotal_file(hash_value, api_key, output_file):
+    parameters = {"apikey": api_key, "resource": hash_value}
+    url = requests.get("https://www.virustotal.com/vtapi/v2/file/report", params=parameters)
+    json_response = url.json()
+    response = int(json_response.get("response_code"))
+
+    if response == 0:
+        print(hash_value + ": UNKNOWN")
+        with open(output_file, "a") as file:
+            file.write(hash_value + " 0\n")
+    elif response == 1:
+        positives = int(json_response.get("positives"))
+        if positives >= 3:
+            print(hash_value + ": MALICIOUS")
+            with open(output_file, "a") as file:
+                file.write(hash_value + " " + str(positives) + "\n")
+        else:
+            print(hash_value + ": NOT MALICIOUS")
+            with open(output_file, "a") as file:
+                file.write(hash_value + " 0\n")
+    else:
+        print(hash_value + ": CAN NOT BE SEARCHED")
+
+def check_virustotal_hash(api_key, hash_values, output_file, premium=False):
+    for hash_value in hash_values:
+        check_virustotal_file(hash_value, api_key, output_file)
+        if premium:
+            time.sleep(1)
+        else:
+            time.sleep(16)
+
+def virustotal_menu(api_key):
+    while True:
+        print("\nVirusTotal Menu:")
+        print("1. Check Single Hash")
+        print("2. Check Hashes from File")
+        print("3. Back to Main Menu")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            hash_value = input("Enter the SHA-1 hash to check against VirusTotal: ")
+            check_virustotal_file(hash_value, api_key, "virustotal_results.txt")
+        elif choice == "2":
+            input_file = input("Enter the file containing SHA-1 hashes to check: ")
+            premium = input("Use premium mode? (y/n): ").lower() == 'y'
+            with open(input_file, "r") as file:
+                hash_values = [line.strip() for line in file.readlines()]
+                check_virustotal_hash(api_key, hash_values, "virustotal_results.txt", premium)
+        elif choice == "3":
+            break
+        else:
+            print("Invalid choice. Please enter 1, 2, or 3.")
+
 # Main
 
 if __name__ == "__main__":
-    directory = input("Enter an absolute directory path to search in: ")
-    
-    if not os.path.exists(directory):
-        print("Directory does not exist.")
+    api_key = os.getenv("apikey")
+    if not api_key:
+        print("API key not found. Make sure you set the 'apikey' environmental variable.")
     else:
-        searched_files = search_files(directory)
+        while True:
+            print("\nMain Menu:")
+            print("1. Recursive Search for Files")
+            print("2. VirusTotal Hash Check")
+            print("3. Quit")
 
-        print(f"Files searched: {searched_files}")
+            choice = input("Enter your choice: ")
+
+            if choice == "1":
+                directory = input("Enter an absolute directory path to search in: ")
+                if not os.path.exists(directory):
+                    print("Directory does not exist.")
+                else:
+                    searched_files, total_scanned = search_files(directory)
+                    print(f"Files searched: {searched_files}")
+                    print(f"Total files scanned: {total_scanned}")
+            elif choice == "2":
+                virustotal_menu(api_key)
+            elif choice == "3":
+                break
+            else:
+                print("Invalid choice. Please enter 1, 2, or 3.")
+
+# End
