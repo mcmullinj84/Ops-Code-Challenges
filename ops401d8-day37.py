@@ -7,12 +7,14 @@
 
 # Credit: Utilized syntax from Code Fellows Demo and ChatGPT to develop this script
 
+# Note: You will need to have Firefox and the Geckodriver
+
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 
-targetsite = input("Enter target site:")
+targetsite = input("Enter target site url: ")
 response = requests.get(targetsite)
 cookie = response.cookies
 
@@ -38,7 +40,7 @@ def save_html_response(response_text):
 
 def open_html_with_firefox():
     options = Options()
-    options.headless = False  # Set to True if you want to run Firefox in headless mode
+    options.headless = True  # Set to False if you want to run Firefox in GUI mode
     driver = webdriver.Firefox(options=options)
     driver.get('file://' + 'response.html')
 
@@ -54,3 +56,5 @@ save_html_response(response_with_cookie.text)
 
 # Open it with Firefox
 open_html_with_firefox()
+
+# End
