@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-# Script Name:                  ops401d8-day37
+# Script Name:                  ops401d8-day38
 # Author:                       Jonathan McMullin
 # Date of latest revision:      08/30/2023
 # Purpose:                      XSS Vulnerability Detection
 
 # Credit: Utilized syntax from Code Fellows Demo and ChatGPT to develop this script
-
-### TODO: Install requests bs4 before executing this in Python3
 
 # Import libraries
 
@@ -18,14 +16,12 @@ from urllib.parse import urljoin
 
 # Declare functions
 
-### TODO: Add function explanation here ###
-### In your own words, describe the purpose of this function as it relates to the overall objectives of the script ###
+# This function retrieves all HTML forms from a given URL.
 def get_all_forms(url):
     soup = bs(requests.get(url).content, "html.parser")
     return soup.find_all("form")
 
-### TODO: Add function explanation here ###
-### In your own words, describe the purpose of this function as it relates to the overall objectives of the script ###
+# This function extracts details (action, method, inputs) from an HTML form.
 def get_form_details(form):
     details = {}
     action = form.attrs.get("action").lower()
@@ -40,8 +36,7 @@ def get_form_details(form):
     details["inputs"] = inputs
     return details
 
-### TODO: Add function explanation here ###
-### In your own words, describe the purpose of this function as it relates to the overall objectives of the script ###
+# This function submits a form with a specified value and checks for XSS vulnerability.
 def submit_form(form_details, url, value):
     target_url = urljoin(url, form_details["action"])
     inputs = form_details["inputs"]
@@ -59,12 +54,12 @@ def submit_form(form_details, url, value):
     else:
         return requests.get(target_url, params=data)
 
-### TODO: Add function explanation here ###
-### In your own words, describe the purpose of this function as it relates to the overall objectives of the script ###
+# This function scans a URL for XSS vulnerabilities.
 def scan_xss(url):
     forms = get_all_forms(url)
     print(f"[+] Detected {len(forms)} forms on {url}.")
-    js_script = ### TODO: Add HTTP and JS code here that will cause a XSS-vulnerable field to create an alert prompt with some text.
+    # Example of a JavaScript payload that triggers an alert.
+    js_script = "<script>alert('XSS')</script>"
     is_vulnerable = False
     for form in forms:
         form_details = get_form_details(form)
@@ -78,12 +73,31 @@ def scan_xss(url):
 
 # Main
 
-### TODO: Add main explanation here ###
-### In your own words, describe the purpose of this main as it relates to the overall objectives of the script ###
+# The main function takes a URL as input and scans it for XSS vulnerabilities.
 if __name__ == "__main__":
     url = input("Enter a URL to test for XSS:") 
     print(scan_xss(url))
 
-### TODO: When you have finished annotating this script with your own comments, copy it to Web Security Dojo
-### TODO: Test this script against one XSS-positive target and one XSS-negative target
-### TODO: Paste the outputs here as comments in this script, clearling indicating which is positive detection and negative detection
+# End
+
+# Outputs on Dojo - 1st = success, 2nd = failure
+'''
+dojo@dojo-VirtualBox:~/Desktop/class-38$ ./challenge.py
+Enter a URL to test for XSS:https://xss-game.appspot.com/level1/frame
+[+] Detected 1 forms on https://xss-game.appspot.com/level1/frame.
+[+] XSS Detected on https://xss-game.appspot.com/level1/frame
+[*] Form details:
+{'action': '',
+ 'inputs': [{'name': 'query',
+             'type': 'text',
+             'value': "<script>alert('XSS')</script>"},
+            {'name': None, 'type': 'submit'}],
+ 'method': 'get'}
+True
+
+dojo@dojo-VirtualBox:~/Desktop/class-38$ ./challenge.py
+Enter a URL to test for XSS:http://dvwa.local/login.php
+[+] Detected 1 forms on http://dvwa.local/login.php.
+False
+
+'''
