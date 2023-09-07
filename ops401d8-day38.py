@@ -81,6 +81,7 @@ if __name__ == "__main__":
 # End
 
 # Outputs on Dojo - 1st = success, 2nd = failure
+
 '''
 dojo@dojo-VirtualBox:~/Desktop/class-38$ ./challenge.py
 Enter a URL to test for XSS:https://xss-game.appspot.com/level1/frame
